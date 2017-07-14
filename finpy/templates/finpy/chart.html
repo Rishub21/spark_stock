@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chart.js demo</title>
+</head>
+
+<body>
+    <canvas id="myChart" style = "height :500px; width: 500px"></canvas>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"> </script>
+      <script type = "text/javascript" src = "chart.js"> </script>
+      <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var labelArray = [];
+        {% for label in labels %} // we have to first convert our python lists to js lists before we can plug them into chart.js, at least for the list of strings, list of ints, we don't have to do this
+          labelArray.push("{{label}}")
+        {% endfor %}
+        alert(labelArray)
+
+        data = {
+            datasets: [{
+            data: {{ lister }},
+            backgroundColor: [
+              "#ff6384",
+              "#ffa500",
+              "#7fffd4",
+            ]
+            }],
+
+        // These labels appear in the legend and in the tooltips when hovering different arcs
+        labels: labelArray
+
+
+
+        };
+
+
+        var myDoughnutChart = new Chart(ctx, {
+          type: 'doughnut',
+          data: data,
+          options: {
+               responsive: false
+           }
+        });
+      </script>
+
+</body>
+
+</html>

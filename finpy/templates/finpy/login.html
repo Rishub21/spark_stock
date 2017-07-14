@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css"  media="screen,projection"/>
+</head>
+
+
+<body>
+  <form method = "POST" action = "" >
+    <input type="text" required="" value = "" name="username" maxlength="150" id="id_username" autofocus="">
+    <input type="text" required="" value = "" name="password" maxlength="150" id="id_username" autofocus="">
+
+    <button type="submit" id = "id_button">LOG IN </button>
+  </form>
+
+  {% if notValid %}
+    <h1> SORRY please try again </h1>
+  {% endif %}
+
+</body>
+
+</html>

@@ -1,0 +1,47 @@
+<html>
+
+  <head>
+    <title>Demo: Getting an email address using the Google+ Sign-in button</title>
+    <!-- Include the API client and Google+ client. -->
+    <meta name="google-signin-client_id" content="401676276834-rkr6k68fcj7g83l0e1et3q86m7t3egfe.apps.googleusercontent.com">
+
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+  </head>
+
+  <body>
+    <!-- Container with the Sign-In button. -->
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+
+
+
+  <script>
+
+    function onSignIn(googleUser) {
+
+      var profile = googleUser.getBasicProfile();
+      console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+      console.log('Name: ' + profile.getName());
+      console.log('Image URL: ' + profile.getImageUrl());
+      console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+
+      var id_token = googleUser.getAuthResponse().id_token;
+      alert(id_token);
+
+
+      $.ajax({
+        url: '/practiceAjax/',
+
+        dataType: 'json',
+        success: function (data) {
+
+            alert(data);
+
+        }
+
+
+      });
+    }
+
+  </script>
+
+ </body>

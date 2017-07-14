@@ -1,0 +1,23 @@
+{% else %}
+  {%  for key, value in passed_screeners.items %}
+  <div class="list-item col s12">
+    <div class="col s1 valign-wrapper" style="height:100px; text-align:center; padding: 3%;">
+    <img class="responsive-img" src = "{% static "images/active-marker-orange.png"%}" id="item-active">
+    </div>
+    {% for val in value %}
+      {% if value|length = 1 %}
+      <div class="col s2 valign-wrapper" style="padding:4%; height:100px; margin-left:-3%;">
+          <img class="responsive-img" src = "{% static "images/logo-orange.png"%}" id="item-img">
+      </div>
+
+      {% elif value|length = 3 %}
+        {% if val = "Finance" %}
+          <div class="col s2 valign-wrapper" style="padding:4%; height:100px; margin-left: 0;">
+              <img style = "width : 75%" class="responsive-img" src = "{% static "images/bullish-green.png"%}" id="item-img">
+              <img style = "width : 75%" class="responsive-img" src = "{% static "images/smartphone-blue.png"%}" id="item-img">
+
+          </div>
+        {% elif val = "Technology" %}
+          <div class="col s2 valign-wrapper" style="padding:4%; height:100px; margin-left: 0%;">
+              <img style = "width : 75%" class="responsive-img" src = "{% static "images/smartphone-blue.png"%}" id="item-img">
+          </div>

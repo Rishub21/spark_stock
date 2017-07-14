@@ -1,0 +1,49 @@
+{% extends "finpy/materializebase.html" %}
+
+{% block body_block %}
+<script>
+$(document).ready(function() {
+   $('select').material_select();
+ });
+</script>
+<div class="input-field col s12">
+  <form id="Screen_Values" method="post" action="/finpy/screener/">
+    {% csrf_token %}
+    <h3>Sector</h3>
+     <select name = "Sector", default = "default">
+       <option value="" disabled selected>Choose your Sector</option>
+       <option value="Technology">Technology</option>
+       <option value="Consumer Services">Consumer Services</option>
+       <option value="Health Care">Health Care</option>
+     </select>
+     <h3>Market Cap</h3>
+     <select name = "Market Cap">
+       <option value="" disabled selected>Choose your Market Cap</option>
+       <option value="Small">Small</option>
+       <option value="Medium">Medium</option>
+       <option value="Large">Large</option>
+     </select>
+
+     <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+       <i class="material-icons right">send</i>
+    </button>
+
+
+  </form>
+
+
+  {% if target_list %}
+    {% for target in target_list %}
+
+        <li> {{ target }} </li>
+    {% endfor %}
+  {% endif %}
+
+
+
+ </div>
+
+
+
+
+{% endblock %}

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Saved Screeners</title>
+
+        <!--Import Google Icon Font-->
+        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+        <!--Import materialize.css-->
+        <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css"  media="screen,projection"/>
+
+        <!--Let browser know website is optimized for mobile-->
+<!--        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>-->
+
+        <!--Import jQuery before materialize.js-->
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js"></script>
+        <!--On DOM ready -->
+        <script>
+            var screenerList = "{{ passed_screeners }}"
+            $(document).ready(function(){
+                //Resize the toggle bar on DOM ready
+                var windowWidth = window.innerWidth;
+                //Viewports greater than 1200px wide
+                if(windowWidth >= 1200){
+                    var toggleBarWidth = $('#toggle-bar').width();
+                    var diff = windowWidth - toggleBarWidth - 300;
+                    $('#toggle-bar').width(toggleBarWidth + diff);
+                }
+                //Viewports smaller than 1200px wide
+                else if(windowWidth < 1200 & windowWidth >= 800){
+                    var toggleBarWidth = $('#toggle-bar').width();
+                    var diff = windowWidth - toggleBarWidth - 150;
+                    $('#toggle-bar').width(toggleBarWidth + diff);
+                }
+
+                //Resize the toggle bar on resize
+                $(window).resize(function() {
+                    var windowWidth = window.innerWidth;
+                    //Viewports greater than 1200px wide
+                    if(windowWidth >= 1200){
+                        var toggleBarWidth = $('#toggle-bar').width();
+                        var diff = windowWidth - toggleBarWidth - 300;
+                        $('#toggle-bar').width(toggleBarWidth + diff);
+                    }
+                    //Viewports smaller than 1200px wide
+                    else if(windowWidth < 1200 & windowWidth >= 800){
+                        var toggleBarWidth = $('#toggle-bar').width();
+                        var diff = windowWidth - toggleBarWidth - 150;
+                        $('#toggle-bar').width(toggleBarWidth + diff);
+                    }
+                });
+
+                //Horizontally scroll the fixed side nav and toggle bar correctly
+                var origPos1 = $('#side-nav').position();
+                $(window).scroll(function(){
+                    $('#side-nav').css('left', origPos1.left - $(this).scrollLeft());
+                });
+                var origPos2 = $('#toggle-bar').position();
+                $(window).scroll(function(){
+                    $('#toggle-bar').css('left', origPos2.left - $(this).scrollLeft());
+                });
+
+                $('#list-container').load('/front-end/HTML/screener-saved-list-item.html');
+
+                //Display modal when clicking on card help button
+                $('#card-help').click(function(){
+
+                });
+                //Mouse over sidenav events
+                $('.sidenav-option').mouseenter(function(){
+                    $(this).addClass('grey lighten-4');
+                });
+                $('.sidenav-option').mouseleave(function(){
+                    if($(this).attr('id') !== 'current-option'){
+                        $(this).removeClass('grey lighten-4');
+                    }
+                });
+            });
+        </script>
+        <link rel="stylesheet" type="text/css" href="{% static "css/screener-saved.css" %}" >
+    </head>
+
+    <body>
+        <div class="row">
+            <!-- Side nav -->
+            <div class="z-depth-1" id="side-nav">
+                <!-- Sidenav header -->
+                <div class="col s12 sidenav-top orange z-depth-1" style="text-align:center;" id="sidenav-header">
+                    <div class="valign-wrapper" style="display:inline-block; position:realtive; transform:translateY(50%); width:auto;">
+                        <a href="landing.html">
+                            <div class="valign-wrapper">
+                                <img class="responsive-img circle z-depth-1" src= "{% static "images/logo-orange.png" %}" style="margin-right:4%;" id="sidenav-img">
+                                <h5 style="color:white;" id="sidenav-title">Leaf Trader</h5>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <!-- Sidenav items -->
+                <div class="col s12" style="text-align:center; padding-right:0%; padding-left:0%; padding-top:.5%;" id="sidenav-item-wrapper">
+                    <div class="valign-wrapper sidenav-option">
+                        <div class="valign-wrapper sidenav-item-wrapper">
+                            <img class="responsive-img sidenav-item-img" src= "{% static "images/bullish.png" %}">
+                            <h5 class="sidenav-item">Dashboard</h5>
+                        </div>
+                    </div>
+                    <div class="valign-wrapper sidenav-option">
+                        <div class="valign-wrapper sidenav-item-wrapper">
+                            <img class="responsive-img sidenav-item-img" src= "{% static "images/money.png" %}">
+                            <h5 class="sidenav-item">Trader</h5>
+                        </div>
+                    </div>
+                    <div class="valign-wrapper grey lighten-4 sidenav-option" id="current-option">
+                        <div class="valign-wrapper sidenav-item-wrapper">
+                            <img class="responsive-img sidenav-item-img" src= "{% static "images/filter-orange.png" %}">
+                            <h5 class="sidenav-item" style="color:#ffa726;">Screeners</h5>
+                        </div>
+                    </div>
+                    <div class="valign-wrapper sidenav-option">
+                        <div class="valign-wrapper sidenav-item-wrapper">
+                            <img class="responsive-img sidenav-item-img" src= "{% static "images/book.png" %}">
+                            <h5 class="sidenav-item">Tutorials</h5>
+                        </div>
+                    </div>
+                    <div class="valign-wrapper sidenav-option">
+                        <div class="valign-wrapper sidenav-item-wrapper">
+                            <img class="responsive-img sidenav-item-img" src= "{% static "images/user.png" %}">
+                            <h5 class="sidenav-item">Sign out</h5>
+                        </div>
+                    </div>
+                </div>
+                <!-- Sidenav footer -->
+                <div class="col s12 orange valign-wrapper" id="sidenav-footer">
+                    <div class="valign-wrapper" style="margin:auto; width:40%;" id="sidenav-attr-wrapper">
+                        <img class="responsive-img" src= "{% static "images/note.png" %}" id="sidenav-attr-img" style="margin-right:2%;">
+                        <h5 id="sidenav-attr" style="color:white;">Attribution</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toggle bar -->
+        <div class="z-depth-1 orange valign-wrapper row" id="toggle-bar">
+            <!-- Left toggle button -->
+            <a class="toggle-active valign-wrapper" href="screener-saved.html">
+                <h5 class="toggle-text" style="margin: 0 auto; color:#4B4B4B;">Saved</h5>
+            </a>
+            <!-- Right toggle button -->
+            <a class="toggle-inactive valign-wrapper" href="/finpy/screenerCreate">
+               <h5 class="toggle-text" style="margin: 0 auto; color:#fff;">Create</h5>
+            </a>
+        </div>
+
+        <!-- Card -->
+        <div id="card-section">
+            <div id="card-container">
+                <div class="z-depth-1 card">
+                    <!-- Card header -->
+                    <div class="orange lighten-1 card-header row" style="padding-left:2%; padding-right:2%; text-align:initial;">
+                        <div class="col s10 valign-wrapper" style="height:100%;">
+                            <h4 id="card-title">Your Screeners</h4>
+
+                        </div>
+                        <div class="col s2 valign-wrapper" style="height:100%;">
+                            <img class="responsive-img" id="card-help" src= "{% static "images/Help.png" %}"style="margin-left:82%; cursor: pointer;">
+                        </div>
+                    </div>
+                    <!-- Card content - screener items go in here -->
+                    <div class="row" id="list-container" style="padding-left:1%; padding-right:1%;">
+                      {% if passed_screeners|length > 0 %}
+                        <h1> </h1>
+                      {% endif %}
+
+
+
+
+
+
+
+
+
+
+                      {% if passed_bul %}
+                        <h5 style="text-align:center; color: #616161 ; margin-top:2%;">No screeners</h5>
+
+
+                      {% else %}
+                        {%  for key, value in passed_screeners.items %}
+
+
+                          {% if value|length = 1 %}
+                          <div class="list-item col s12">
+                            <div class="col s1 valign-wrapper" style="height:100px; text-align:center; padding: 3%;">
+                            <img class="responsive-img" src = "{% static "images/active-marker-orange.png"%}" id="item-active">
+                            </div>
+                            <div class="col s2 valign-wrapper" style="padding-left: 2%;padding-top:4%; padding-right:5.5%; padding-bottom: 4%; height:100px; margin-left: -3%;">
+                              <img style = "width : 75%" class="responsive-img" src = "{% static "img-circle/bullish-green-circle.png"%}" id="item-img">
+                            </div>
+
+                          {% elif value|length = 3 %}
+                          <div class="list-item col s12">
+                            <div class="col s1 valign-wrapper" style="height:100px; text-align:center; padding: 3%; margin-right : 0px;">
+                            <img class="responsive-img" src = "{% static "images/active-marker-orange.png"%}" id="item-active">
+                            </div>
+                            <div class="col s2 valign-wrapper" style="padding-left: 2%;padding-top:4%; padding-right:5.5%; padding-bottom: 4%; height:100px; margin-left: -3%;">
+                            {% for val in value %}
+                              {% if val = "Finance" %}
+                                    <img style = "width : 75%" class="responsive-img" src = "{% static "img-circle/bullish-green-circle.png"%}" id="item-img">
+
+
+
+                              {% elif val = "Technology" %}
+                                    <img style = "width : 75%" class="responsive-img" src = "{% static "img-circle/smartphone-blue-circle.png"%}" id="item-img">
+                              {% elif val = "Health Care" %}
+                                    <img style = "width : 75%" class="responsive-img" src = "{% static "img-circle/pill-red-circle.png"%}" id="item-img">
+                              {% endif %}
+
+
+                            {% endfor %}
+                          </div>
+                          {% elif value|length = 4 %}
+                            <div class="list-item col s12">
+                              <div class="col s1 valign-wrapper" style="height:100px; text-align:center; padding: 3%; margin-right : 0px;">
+                              <img class="responsive-img" src = "{% static "images/active-marker-orange.png"%}" id="item-active">
+                              </div>
+                              <div class="col s2 valign-wrapper" style="padding:4%; height:100px; margin-left: 0;">
+                              {% for val in value %}
+                                {% if val = "Finance" %}
+                                      <img  class="responsive-img" src = "{% static "img-circle/bullish-green-circle.png"%}" id="item-img">
+
+
+                                {% elif val = "Technology" %}
+                                      <img  class="responsive-img" src = "{% static "img-circle/smartphone-blue-circle.png"%}" id="item-img">
+                                {% elif val = "Health Care" %}
+                                      <img  class="responsive-img" src = "{% static "img-circle/pill-red-circle.png"%}" id="item-img">
+                                {% endif %}
+                              {% endfor %}
+
+
+                            </div>
+                          {% endif %}
+                              <div class="col s3 valign-wrapper" style="height:100px;">
+                                  <h5 class="item-title truncate" id="item-title-box" style="margin-left:1.5vw; width:100%;"> {{ key }}</h5>
+                              </div>
+                              <div class="col s2 valign-wrapper" style="height:100px;">
+                                  <h6 class="item-type truncate" id="item-type-box" style="width:100%; text-align:center;">Custom</h6>
+                              </div>
+                              <div class="col s3 valign-wrapper" style="height:100px; text-align:center;">
+                                  <h5 class="item-last-used truncate" id="item-last-used-box" style="width:100%; text-align:center;">Last used - {{ key.last_used }}</h5>
+                              </div>
+                              <div class="col s1 valign-wrapper" style="height:100px; float:right;" id="item-more-wrapper">
+                                  <img class="responsive-img" src = "{% static "images/more-grey.png"%}" id="item-more" style="cursor: pointer;">
+                              </div>
+                            </div>
+                        {% endfor %}
+
+                      {% endif %}
+
+<!--
+                        {% for screener in passed_screeners %}
+                          <h1>{{ screener.sector }} </h1>
+                          <div class="list-item col s12">
+                            <div class="col s1 valign-wrapper" style="height:100px; text-align:center; padding: 3%;">
+                            <img class="responsive-img" src = "{% static "images/active-marker-orange.png"%}" id="item-active">
+                            </div>
+                          {% if screener.sectors.count = 0 %}
+
+                            <div class="col s2 valign-wrapper" style="padding:4%; height:100px; margin-left:-3%;">
+                                <img class="responsive-img" src = "{% static "images/bullish-green.png"%}" id="item-img">
+                            </div>
+
+                          {% elif screener.sectors.count = 1 %}
+
+                            {% for sector in screener.sectors %}
+                              {% if sector == "Finance" %}
+                              <div class="col s2 valign-wrapper" style="padding:4%; height:100px; margin-left:-3%;">
+                                  <img class="responsive-img" src = "{% static "images/bullish-green.png"%}" id="item-img">
+                              </div>
+                              {% elif sector == "Technology" %}
+                                <div class="col s2 valign-wrapper" style="padding:4%; height:100px; margin-left:-3%;">
+                                  <img class="responsive-img" src = "{% static "images/smartphone-blue.png"%}" id="item-img">
+                                </div>
+                              {% endif %}
+                            {% endfor %}
+                          {% endif %}
+                          <div class="col s3 valign-wrapper" style="height:100px;">
+                              <h5 class="item-title truncate" id="item-title-box" style="margin-left:1.5vw; width:100%;"> {{ screener.name }}</h5>
+                          </div>
+                          <div class="col s2 valign-wrapper" style="height:100px;">
+                              <h6 class="item-type truncate" id="item-type-box" style="width:100%; text-align:center;">Custom</h6>
+                          </div>
+                          <div class="col s3 valign-wrapper" style="height:100px; text-align:center;">
+                              <h5 class="item-last-used truncate" id="item-last-used-box" style="width:100%; text-align:center;">Last used - {{ screener.last_used }}</h5>
+                          </div>
+                          <div class="col s1 valign-wrapper" style="height:100px; float:right;" id="item-more-wrapper">
+                              <img class="responsive-img" src = "{% static "images/more-grey.png"%}" id="item-more" style="cursor: pointer;">
+                          </div>
+                        </div>
+
+                        {% endfor %}
+
+
+-->
+
+
+
+
+
+
+
+
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

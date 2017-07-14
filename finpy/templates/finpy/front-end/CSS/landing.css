@@ -1,0 +1,49 @@
+body{
+    min-width: 800px;
+}
+
+/* Sign in button */
+.landing-btn-1{
+    text-align: center;
+    border-style: solid;
+    border-width: 1px;
+    border-color: white;
+    border-radius: 5px;
+}
+
+/* Sign up button */
+.landing-btn-2{
+    text-align: center;
+    border-style: solid;
+    border-width: 1px;
+    border-color: white;
+    border-radius: 5px; 
+    background-color: white;
+    color: black;
+    text-transform: none;
+    margin-left: 2.4%;
+}
+
+/* Other nav buttons */
+.top-nav{
+    text-transform: none;
+    color:white;
+}
+
+/* Top section */
+.top-section{
+    background-image: url("/front-end/img/landing-header.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 100vh;
+    max-height: 1200px;
+    min-height: 600px;
+    font-size: 16px;
+}
+
+.get-started-btn{
+    text-transform: none;
+    background-color: #4caf50;
+    width: 20%;
+}

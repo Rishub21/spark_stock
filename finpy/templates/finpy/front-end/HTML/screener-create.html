@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Create Screener</title>
+
+        <!--Import Google Icon Font-->
+        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+        <!--Import materialize.css-->
+        <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css"  media="screen,projection"/>
+
+        <!--Let browser know website is optimized for mobile-->
+<!--        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>-->
+
+        <!--Import jQuery before materialize.js-->
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js"></script>
+        <!--On DOM ready -->
+        <script>
+            $(document).ready(function(){
+                //Resize the toggle bar on DOM ready
+                var sortResults;
+                var windowWidth = window.innerWidth;
+                //Viewports greater than 1200px wide
+                if(windowWidth >= 1200){
+                    var toggleBarWidth = $('#toggle-bar').width();
+                    var diff = windowWidth - toggleBarWidth - 300;
+                    $('#toggle-bar').width(toggleBarWidth + diff);
+                }
+                //Viewports smaller than 1200px wide
+                else if(windowWidth < 1200 & windowWidth >= 1000){
+                    var toggleBarWidth = $('#toggle-bar').width();
+                    var diff = windowWidth - toggleBarWidth - 150;
+                    $('#toggle-bar').width(toggleBarWidth + diff);
+                }
+
+                //Resize the toggle bar on resize
+                $(window).resize(function() {
+                    var windowWidth = window.innerWidth;
+                    //Viewports greater than 1200px wide
+                    if(windowWidth >= 1200){
+                        var toggleBarWidth = $('#toggle-bar').width();
+                        var diff = windowWidth - toggleBarWidth - 300;
+                        $('#toggle-bar').width(toggleBarWidth + diff);
+                    }
+                    //Viewports smaller than 1200px wide
+                    else if(windowWidth < 1200 & windowWidth >= 1000){
+                        var toggleBarWidth = $('#toggle-bar').width();
+                        var diff = windowWidth - toggleBarWidth - 150;
+                        $('#toggle-bar').width(toggleBarWidth + diff);
+                    }
+                });
+
+                //Horizontally scroll the fixed side nav and toggle bar correctly
+                var origPos1 = $('#side-nav').position();
+                $(window).scroll(function(){
+                    $('#side-nav').css('left', origPos1.left - $(this).scrollLeft());
+                });
+                var origPos2 = $('#toggle-bar').position();
+                $(window).scroll(function(){
+                    $('#toggle-bar').css('left', origPos2.left - $(this).scrollLeft());
+                });
+
+                //Display modal when clicking on help buttons
+                $('#card1-help').click(function(){
+
+                });
+                $('#card2-help').click(function(){
+
+                });
+
+                //Mouse over sidenav events
+                $('.sidenav-option').mouseenter(function(){
+                    $(this).addClass('grey lighten-4');
+                });
+                $('.sidenav-option').mouseleave(function(){
+                    if($(this).attr('id') !== 'current-option'){
+                        $(this).removeClass('grey lighten-4');
+                    }
+                });
+
+                //Init carousel
+                var activeSlide = '#slide-one'; // These are the screener presets
+                var scrollCount = 0;
+                $('.carousel').carousel({
+                    dist: 0,
+                    padding: 100,
+                    onCycleTo: function(data) {
+                        //After first scroll
+                        if(scrollCount > 0){
+                            //Change card images to inactive
+                            switch(activeSlide){
+                                case '#slide-one':
+                                    $(activeSlide).find('img').attr('src', "{% static "images/star-grey.png"%}");
+                                    break;
+                                case '#slide-two':
+                                    $(activeSlide).find('img').attr('src', "{% static "images/lines-grey.png"%}");
+                                    break;
+                                case '#slide-three':
+                                    $(activeSlide).find('img').attr('src', "{% static "images/money.png"%}");
+                                    break;
+                                case '#slide-four':
+                                    $(activeSlide).find('img').attr('src', "{% static "images/growth.png"%}");
+                                    break;
+                                case '#slide-five':
+                                    $(activeSlide).find('img').attr('src', "{% static "images/bullish.png"%}");
+                                    break;
+                                case '#slide-six':
+                                    $(activeSlide).find('img').attr('src', "{% static "images/smartphone.png"%}");
+                                    break;
+                                case '#slide-seven':
+                                    $(activeSlide).find('img').attr('src', "{% static "images/bank-grey.png"%}");
+                                    break;
+                                case '#slide-eight':
+                                    $(activeSlide).find('img').attr('src', "{% static "images/pill.png"%}");
+                                    break;
+                                case '#slide-nine':
+                                    $(activeSlide).find('img').attr('src', "{% static "images/bolt.png"%}");
+                                    break;
+                                case '#slide-ten':
+                                    $(activeSlide).find('img').attr('src', "{% static "images/factory.png"%}");
+                                    break;
+                            }
+
+                            //Apply/remove active border effects
+                            $(activeSlide).removeClass('carousel-card-active');
+                            activeSlide = '#' + data.attr('id');
+                            $(activeSlide).addClass('carousel-card-active');
+
+                            //Change card images to active, fill in descriptions
+                            switch(activeSlide){
+                                case '#slide-one':
+                                    $(activeSlide).find('img').attr('src', "{% static "images/star-yellow.png"%}");
+                                    $('#preset-desc-p').text(" A list of the highest traded stocks for the day, by volume.");
+
+                                    $.ajax({
+                                      url: '/finpy/mostPopular/',
+                                      dataType: 'json',
+                                      success: function (data) {
+                                       sortResults = data; //sortResults should be the same for all of them
+                                        var tr = [];
+                                        var preset_results = $("#preset_results");
+                                        var i = 0 ;
+                                        $("#preset_results tbody").remove();
+
+                                        for(var key in data){
+
+                                          tr.push('<tr>');
+                                          tr.push("<td class ='truncate'>" + key + "</td>");
+
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].market_cap + "</td>");
+
+                                          tr.push('</tr>');
+                                          i++;
+                                        }
+                                        $("#preset_results").append($(tr.join("")));
+                                     }
+                                   });
+                                    break;
+                                case '#slide-two':
+                                    $(activeSlide).find('img').attr('src', "{% static "images/lines-blue.png"%}");
+                                    $('#preset-desc-p').text("These stocks can serve as a stable foundation to any good portfolio. They might not make the largest returns, but in general, they have the strong financials and a healthy balance sheet. These stocks are chosen based off of Beta, which is a measure of the volatility of a stock relative to the rest of the market.");
+
+
+                                   $.ajax({
+                                     url: '/finpy/lowVolatility/',
+                                     dataType: 'json',
+                                     success: function (data) {
+                                      sortResults = data; //sortResults should be the same for all of them
+                                       var tr = [];
+                                       var preset_results = $("#preset_results");
+                                       var i = 0 ;
+                                       $("#preset_results tbody").remove();
+
+                                       for(var key in data){
+
+                                         tr.push('<tr>');
+                                         tr.push("<td class ='truncate'>" + key + "</td>");
+
+                                           tr.push("<td>" + data[key].current_price + "</td>");
+                                           tr.push("<td>" + data[key].current_price + "</td>");
+                                           tr.push("<td>" + data[key].current_price + "</td>");
+                                           tr.push("<td>" + data[key].market_cap + "</td>");
+
+                                         tr.push('</tr>');
+                                         i++;
+                                       }
+                                       $("#preset_results").append($(tr.join("")));
+                                    }
+                                  });
+
+                                    break;
+                                case '#slide-three':
+                                    $(activeSlide).find('img').attr('src', "{% static "images/money-green.png"%}");
+                                    $('#preset-desc-p').text("Undervalued stocks are those that are selling below the true intrinsic value they deserve based off of their earnings and financials. These stocks have the potential to greatly increase in value, making them a good investment option while they are still low. These stocks are selected based off of their Price to Earnings and Price to Book ratios.");
+
+                                    $.ajax({
+                                      url: '/finpy/undervalued/',
+                                      dataType: 'json',
+                                      success: function (data) {
+                                       sortResults = data; //sortResults should be the same for all of them
+                                        var tr = [];
+                                        var preset_results = $("#preset_results");
+                                        var i = 0 ;
+                                        $("#preset_results tbody").remove();
+                                        for(var key in data){
+
+                                          tr.push('<tr>');
+                                          tr.push("<td class ='truncate'>" + key + "</td>");
+
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].market_cap + "</td>");
+
+                                          tr.push('</tr>');
+                                          i++;
+                                        }
+                                        $("#preset_results").append($(tr.join("")));
+                                     }
+                                    });
+                                    break;
+                                case '#slide-four':
+                                    $(activeSlide).find('img').attr('src', "{% static "images/growth-purple.png"%}");
+                                    $('#preset-desc-p').text("While these have a slightly higher price than undervalued stocks, their potential for growth has been underestimated. These stocks are selected based on their Price to Earnings and Price to Earnings to Growth ratios.");
+
+                                    $.ajax({
+                                      url: '/finpy/undervaluedGrowth/',
+                                      dataType: 'json',
+                                      success: function (data) {
+                                       sortResults = data; //sortResults should be the same for all of them
+                                        var tr = [];
+                                        var preset_results = $("#preset_results");
+                                        var i = 0 ;
+                                        $("#preset_results tbody").remove();
+
+                                        for(var key in data){
+
+                                          tr.push('<tr>');
+                                          tr.push("<td class ='truncate'>" + key + "</td>");
+
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].market_cap + "</td>");
+
+                                          tr.push('</tr>');
+                                          i++;
+                                        }
+                                        $("#preset_results").append($(tr.join("")));
+                                     }
+                                    });
+
+                                    break;
+                                case '#slide-five': // This doesn't work till your data is squared out
+                                    $(activeSlide).find('img').attr('src', "{% static "images/bullish-green.png"%}");
+                                    $('#preset-desc-p').text("These stocks exhibit massive upside, as their revenue growth rates are on the order of 25% per year, which is far above market average. Include a couple of these in your portfolio to bolster your returns quickly. However, tread lightly; these stocks can also be rather volatile.");
+
+
+                                    $.ajax({
+                                      url: '/finpy/highGrowth/',
+                                      dataType: 'json',
+                                      success: function (data) {
+                                       sortResults = data; //sortResults should be the same for all of them
+                                        var tr = [];
+                                        var preset_results = $("#preset_results");
+                                        var i = 0 ;
+                                        $("#preset_results tbody").remove();
+
+                                        for(var key in data){
+
+                                          tr.push('<tr>');
+                                          tr.push("<td class ='truncate'>" + key + "</td>");
+
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].market_cap + "</td>");
+
+                                          tr.push('</tr>');
+                                          i++;
+                                        }
+                                        $("#preset_results").append($(tr.join("")));
+                                     }
+                                    });
+
+
+
+                                    break;
+                                case '#slide-six':
+                                    $(activeSlide).find('img').attr('src', "{% static "images/smartphone-blue.png"%}");
+                                    $('#preset-desc-p').text("");
+
+                                    $.ajax({
+                                      url: '/finpy/siliconValley/',
+                                      dataType: 'json',
+                                      success: function (data) {
+                                       sortResults = data; //sortResults should be the same for all of them
+                                        var tr = [];
+                                        var preset_results = $("#preset_results");
+                                        var i = 0 ;
+                                        $("#preset_results tbody").remove();
+
+                                        for(var key in data){
+
+                                          tr.push('<tr>');
+                                          tr.push("<td class ='truncate'>" + key + "</td>");
+
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].market_cap + "</td>");
+
+                                          tr.push('</tr>');
+                                          i++;
+                                        }
+                                        $("#preset_results").append($(tr.join("")));
+                                     }
+                                   });
+                                    break;
+                                case '#slide-seven':
+                                    $(activeSlide).find('img').attr('src', "{% static "images/bank-green.png"%}");
+                                    $('#preset-desc-p').text("");
+
+
+                                    $.ajax({
+                                      url: '/finpy/finance/',
+                                      dataType: 'json',
+                                      success: function (data) {
+                                       sortResults = data; //sortResults should be the same for all of them
+                                        var tr = [];
+                                        var preset_results = $("#preset_results");
+                                        var i = 0 ;
+                                        $("#preset_results tbody").remove();
+
+                                        for(var key in data){
+
+                                          tr.push('<tr>');
+                                          tr.push("<td class ='truncate'>" + key + "</td>");
+
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].market_cap + "</td>");
+
+                                          tr.push('</tr>');
+                                          i++;
+                                        }
+                                        $("#preset_results").append($(tr.join("")));
+                                     }
+                                   });
+                                    break;
+                                case '#slide-eight':
+                                    $(activeSlide).find('img').attr('src', "{% static "images/pill-red.png"%}");
+                                    $('#preset-desc-p').text("");
+
+                                    $.ajax({
+                                      url: '/finpy/healthCare/',
+                                      dataType: 'json',
+                                      success: function (data) {
+                                       sortResults = data; //sortResults should be the same for all of them
+                                        var tr = [];
+                                        var preset_results = $("#preset_results");
+                                        var i = 0 ;
+                                        $("#preset_results tbody").remove();
+
+                                        for(var key in data){
+
+                                          tr.push('<tr>');
+                                          tr.push("<td class ='truncate'>" + key + "</td>");
+
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].market_cap + "</td>");
+
+                                          tr.push('</tr>');
+                                          i++;
+                                        }
+                                        $("#preset_results").append($(tr.join("")));
+                                     }
+                                   });
+                                    break;
+                                case '#slide-nine':
+                                    $(activeSlide).find('img').attr('src', "{% static "images/bolt-yellow.png"%}");
+                                    $('#preset-desc-p').text("");
+
+                                    $.ajax({
+                                      url: '/finpy/energy/',
+                                      dataType: 'json',
+                                      success: function (data) {
+                                       sortResults = data; //sortResults should be the same for all of them
+                                        var tr = [];
+                                        var preset_results = $("#preset_results");
+                                        var i = 0 ;
+                                        $("#preset_results tbody").remove();
+
+                                        for(var key in data){
+
+                                          tr.push('<tr>');
+                                          tr.push("<td class ='truncate'>" + key + "</td>");
+
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].current_price + "</td>");
+                                            tr.push("<td>" + data[key].market_cap + "</td>");
+
+                                          tr.push('</tr>');
+                                          i++;
+                                        }
+                                        $("#preset_results").append($(tr.join("")));
+                                     }
+                                   });
+                                    break;
+                                case '#slide-ten':
+                                    $(activeSlide).find('img').attr('src', "{% static "images/factory-orange.png"%}");
+                                    $('#preset-desc-p').text("");
+                                    break;
+                            }
+
+                        }
+                        scrollCount ++;
+                    }
+                });
+
+                //Scroll the carousel once
+                $('.carousel').carousel('next');
+
+                //Scroll carousel left and right when arrows are clicked
+                $('#arrow-left').click(function(){
+                    $('.carousel').carousel('prev');
+                });
+                $('#arrow-right').click(function(){
+                    $('.carousel').carousel('next');
+                });
+
+                //Detect carousel item click, expand card
+                var canExpand = true;
+                $('.carousel-item').click(function(){
+                    //If this is the first carousel item click, then expand card
+                    if(canExpand){
+                        canExpand = false;
+                        $('#preset-expanded').slideToggle(300, null);
+                    }
+                });
+
+                //Detect preset collapse arrow click
+                $('#collapse-arrow').click(function(){
+                    $('#preset-expanded').slideToggle(300, null);
+                    canExpand = true;
+                });
+
+                //Detect custom screener create button click
+                var hasClicked1 = false;
+                $('#create-button').click(function(){
+                    //Expand custom card if needed, load in new data
+
+                    var sector_list = [];
+                    var ratio_dict = {};
+                    var price_list = [];
+                    var marketcap_list = [];
+
+
+                    finance_box = document.getElementById('box1');
+                    utilities_box = document.getElementById('box2');
+                    consumerdisc_box = document.getElementById('box3');
+                    consumerstap_box = document.getElementById('box4');
+                    energy_box = document.getElementById('box5');
+                    health_box = document.getElementById('box6');
+                    industrials_box = document.getElementById('box7');
+                    technology_box = document.getElementById('box8');
+                    telecom_box =  document.getElementById('box9');
+                    materials_box = document.getElementById('box10');
+
+                    var screenerName = $('#screener-name').val();
+                    if(finance_box.checked){
+                        sector_list.push("Financials");
+                    }
+                    if(utilities_box.checked){
+                        sector_list.push("Utilities");
+                    }
+                    if(consumerdisc_box.checked){
+                        sector_list.push("Consumer Discretionary");
+                    }
+                    if(consumerstap_box.checked){
+                        sector_list.push("Consumer Staples");
+                    }
+                    if(energy_box.checked){
+                        sector_list.push("Energy");
+                    }
+                    if(health_box.checked){
+                        sector_list.push("Health");
+                    }
+                    if(industrials_box.checked){
+                        sector_list.push("Industrials");
+                    }
+                    if(technology_box.checked){
+                        sector_list.push("Information Technology");
+                    }
+                    if(telecom_box.checked){
+                        sector_list.push("Telecommunication Services");
+                    }
+                    if(materials_box.checked){
+                        sector_list.push("Materials");
+                    }
+
+                    PE_box = document.getElementById("P/E").value;
+                    PS_box = document.getElementById("P/S").value;
+                    EPS_box = document.getElementById("EPS").value;
+                    PB_box = document.getElementById("P/Book").value;
+
+                    if(PE_box != ''){
+                      ratio_dict["PE_ratio"] = PE_box;
+                    }
+                    if(PS_box != '') {
+                      ratio_dict["PS_ratio"] = PS_box;
+                    }
+                    if(EPS_box != '') {
+                      ratio_dict["EPS_ratio"] = EPS_box;
+                    }
+                    if(PB_box != ''){
+                      ratio_dict["Price_Book"] = EPS_box;
+
+                    }
+
+                    low = document.getElementById("low").value;
+                    high = document.getElementById("low").value;
+
+                    if(low != ''){
+                      price_list.push(low);
+                    }
+                    else {
+                      price_list.push(0);
+                    }
+
+                    if(high != ''){
+                      price_list.push(high);
+                    }
+                    else {
+                      price_list.push(100000000000); // some arbitrarily large number
+                    }
+
+
+                    small = document.getElementById("small");
+                    medium = document.getElementById("medium");
+                    large = document.getElementById("large");
+                    mega = document.getElementById("mega");
+
+                    if(small.checked){
+                      marketcap_list.push("Small");
+                    }
+                    if(medium.checked){
+                      marketcap_list.push("Medium");
+                    }
+                    if(large.checked){
+                      marketcap_list.push("Large");
+                    }
+                    if(mega.checked){
+                      marketcap_list.push("Mega");
+                    }
+
+                    if(checkName(screenerName, 30)){
+                        if(!hasClicked1){
+                            hasClicked1 = true;
+                            screen_Name = screenerName;
+
+
+                            $.ajax({
+                              url: '/finpy/screener/',
+                              data: {
+                               'sectors': sector_list.join(),
+                               'ratios' : JSON.stringify(ratio_dict),
+                               'prices' : price_list.join(),
+                               'marketcap': marketcap_list.join(),
+                               'name' : screen_Name,
+                              },
+                              dataType: 'json',
+                              success: function (data) {
+                                alert(data.response)
+                             }
+                           });
+
+
+
+
+
+
+
+
+
+                            $('#custom-expanded').slideToggle(300, null);
+
+                        }
+                        //Load in new data
+                    }
+
+                });
+
+                //Table tab clicks
+                $('#table-tab-1').click(function(){
+                    //Apply and remove proper classes
+                    tabClick(1, 1);
+                });
+                $('#table-tab-2').click(function(){
+                    $("#preset_results tbody").remove();
+                    var objList = []
+                    for (var obj in sortResults){
+                      objList.push(sortResults[obj])
+                    }
+
+
+                  //  objList = sortResults.toArray();
+
+                    function increasingOrder(a,b){
+                      return b.current_price-a.current_price;
+                    }
+
+                    objList.sort(increasingOrder)
+
+                    for (var object in objList){
+                      console.log(objList[object].current_price)
+                    }
+
+                    var i = 0 ;
+                    var tr = [];
+                    for(var object in objList){
+
+                      tr.push('<tr>');
+                      tr.push("<td>" + objList[object].name + "</td>");
+                      //if (data[i].current_price){
+
+                      tr.push("<td>" + objList[object].current_price + "</td>");
+                      tr.push("<td>" + objList[object].current_price + "</td>");
+                      tr.push("<td>" + objList[object].current_price + "</td>");
+                      tr.push("<td>" + objList[object].market_cap + "</td>");
+
+
+
+                     // }
+                   //   else {
+                     //   tr.push("<td>" + "N/A"+ "</td>")
+                     // }
+
+                      tr.push('</tr>');
+                      i++;
+                    }
+                    $("#preset_results").append($(tr.join("")));
+
+
+
+
+                    //Apply and remove proper classes
+                    tabClick(2, 1);
+                });
+                $('#table-tab-3').click(function(){
+                    //Apply and remove proper classes
+                    tabClick(3, 1);
+                });
+                $('#table-tab-4').click(function(){
+                    //Apply and remove proper classes
+                    tabClick(4, 1);
+                });
+                $('#table-tab-5').click(function(){
+                    //Apply and remove proper classes
+                    tabClick(5, 1);
+                });
+                $('#custom-table-tab-1').click(function(){
+                    //Apply and remove proper classes
+                    tabClick(1, 2);
+                });
+                $('#custom-table-tab-2').click(function(){
+                    //Apply and remove proper classes
+                    tabClick(2, 2);
+                });
+                $('#custom-table-tab-3').click(function(){
+                    //Apply and remove proper classes
+                    tabClick(3, 2);
+                });
+                $('#custom-table-tab-4').click(function(){
+                    //Apply and remove proper classes
+                    tabClick(4, 2);
+                });
+                $('#custom-table-tab-5').click(function(){
+                    //Apply and remove proper classes
+                    tabClick(5, 2);
+                });
+            });
+
+            //Adds and removes proper classes from table tabs
+            function tabClick(tab, card){
+                if(card === 1){
+                    switch(tab){
+                    case 1:
+                        $('#table-tab-1').addClass('tab-left-active');
+                        $('#table-tab-2').removeClass('tab-mid-active');
+                        $('#table-tab-3').removeClass('tab-mid-active');
+                        $('#table-tab-4').removeClass('tab-mid-active');
+                        $('#table-tab-5').removeClass('tab-right-active');
+                        break;
+                    case 2:
+                        $('#table-tab-1').removeClass('tab-left-active');
+                        $('#table-tab-2').addClass('tab-mid-active');
+                        $('#table-tab-3').removeClass('tab-mid-active');
+                        $('#table-tab-4').removeClass('tab-mid-active');
+                        $('#table-tab-5').removeClass('tab-right-active');
+                        break;
+                    case 3:
+                        $('#table-tab-1').removeClass('tab-left-active');
+                        $('#table-tab-2').removeClass('tab-mid-active');
+                        $('#table-tab-3').addClass('tab-mid-active');
+                        $('#table-tab-4').removeClass('tab-mid-active');
+                        $('#table-tab-5').removeClass('tab-right-active');
+                        break;
+                    case 4:
+                        $('#table-tab-1').removeClass('tab-left-active');
+                        $('#table-tab-2').removeClass('tab-mid-active');
+                        $('#table-tab-3').removeClass('tab-mid-active');
+                        $('#table-tab-4').addClass('tab-mid-active');
+                        $('#table-tab-5').removeClass('tab-right-active');
+                        break;
+                    case 5:
+                        $('#table-tab-1').removeClass('tab-left-active');
+                        $('#table-tab-2').removeClass('tab-mid-active');
+                        $('#table-tab-3').removeClass('tab-mid-active');
+                        $('#table-tab-4').removeClass('tab-mid-active');
+                        $('#table-tab-5').addClass('tab-right-active');
+                        break;
+                    }
+                }
+                else{
+                    switch(tab){
+                    case 1:
+                        $('#custom-table-tab-1').addClass('tab-left-active');
+                        $('#custom-table-tab-2').removeClass('tab-mid-active');
+                        $('#custom-table-tab-3').removeClass('tab-mid-active');
+                        $('#custom-table-tab-4').removeClass('tab-mid-active');
+                        $('#custom-table-tab-5').removeClass('tab-right-active');
+                        break;
+                    case 2:
+                        $('#custom-table-tab-1').removeClass('tab-left-active');
+                        $('#custom-table-tab-2').addClass('tab-mid-active');
+                        $('#custom-table-tab-3').removeClass('tab-mid-active');
+                        $('#custom-table-tab-4').removeClass('tab-mid-active');
+                        $('#custom-table-tab-5').removeClass('tab-right-active');
+                        break;
+                    case 3:
+                        $('#custom-table-tab-1').removeClass('tab-left-active');
+                        $('#custom-table-tab-2').removeClass('tab-mid-active');
+                        $('#custom-table-tab-3').addClass('tab-mid-active');
+                        $('#custom-table-tab-4').removeClass('tab-mid-active');
+                        $('#custom-table-tab-5').removeClass('tab-right-active');
+                        break;
+                    case 4:
+                        $('#custom-table-tab-1').removeClass('tab-left-active');
+                        $('#custom-table-tab-2').removeClass('tab-mid-active');
+                        $('#custom-table-tab-3').removeClass('tab-mid-active');
+                        $('#custom-table-tab-4').addClass('tab-mid-active');
+                        $('#custom-table-tab-5').removeClass('tab-right-active');
+                        break;
+                    case 5:
+                        $('#custom-table-tab-1').removeClass('tab-left-active');
+                        $('#custom-table-tab-2').removeClass('tab-mid-active');
+                        $('#custom-table-tab-3').removeClass('tab-mid-active');
+                        $('#custom-table-tab-4').removeClass('tab-mid-active');
+                        $('#custom-table-tab-5').addClass('tab-right-active');
+                        break;
+                    }
+                }
+            }
+
+
+            //Vet the custom screener name
+            function checkName(name, maxLen){
+                if(name.length <= maxLen){
+                    if(name.length > 0){
+                        return true;
+                    }
+                    else{
+                        Materialize.toast('Please name this screener', 4000);
+                        return false;
+                    }
+                }
+                else{
+                    Materialize.toast('Name must be less than ' + maxLen.toString() + ' characters long', 4000);
+                    return false;
+                }
+            }
+
+            //Vet the custom screener name, change name label
+            function checkName(name, maxLen){
+                if(name.length <= maxLen){
+                    if(name.length > 0){
+                        $('#name-label').text('Screener - ' + name);
+                        return true;
+                    }
+                    else{
+                        Materialize.toast('Please name this screener', 4000);
+                        return false;
+                    }
+                }
+                else{
+                    Materialize.toast('Name must be less than ' + maxLen.toString() + ' characters long', 4000);
+                    return false;
+                }
+            }
+        </script>
+        <link rel="stylesheet" type="text/css" href="{% static "css/screener-create.css" %}">
+    </head>
+
+    <body>
+        <div class="row">
+            <!-- Side nav -->
+            <div class="z-depth-1" id="side-nav">
+                <!-- Sidenav header -->
+                <div class="col s12 sidenav-top orange z-depth-1" style="text-align:center;" id="sidenav-header">
+                    <div class="valign-wrapper" style="display:inline-block; position:realtive; transform:translateY(50%); width:auto;">
+                        <a href="landing.html">
+                            <div class="valign-wrapper">
+                                <img class="responsive-img circle z-depth-1" src="{% static "images/logo-orange.png"%}"style="margin-right:4%;" id="sidenav-img">
+                                <h5 style="color:white;" id="sidenav-title">Leaf Trader</h5>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <!-- Sidenav items -->
+                <div class="col s12" style="text-align:center; padding-right:0%; padding-left:0%; padding-top:.5%;" id="sidenav-item-wrapper">
+                    <div class="valign-wrapper sidenav-option">
+                        <div class="valign-wrapper sidenav-item-wrapper">
+                            <img class="responsive-img sidenav-item-img" src="{% static "images/bullish.png"%}">
+                            <h5 class="sidenav-item">Dashboard</h5>
+                        </div>
+                    </div>
+                    <div class="valign-wrapper sidenav-option">
+                        <div class="valign-wrapper sidenav-item-wrapper">
+                            <img class="responsive-img sidenav-item-img" src="{% static "images/money.png"%}">
+                            <h5 class="sidenav-item">Trader</h5>
+                        </div>
+                    </div>
+                    <div class="valign-wrapper grey lighten-4 sidenav-option" id="current-option">
+                        <div class="valign-wrapper sidenav-item-wrapper">
+                            <img class="responsive-img sidenav-item-img" src="{% static "images/filter-orange.png"%}">
+                            <h5 class="sidenav-item" style="color:#ffa726;">Screeners</h5>
+                        </div>
+                    </div>
+                    <div class="valign-wrapper sidenav-option">
+                        <div class="valign-wrapper sidenav-item-wrapper">
+                            <img class="responsive-img sidenav-item-img" src="{% static "images/book.png"%}">
+                            <h5 class="sidenav-item">Tutorials</h5>
+                        </div>
+                    </div>
+                    <div class="valign-wrapper sidenav-option">
+                        <div class="valign-wrapper sidenav-item-wrapper">
+                            <img class="responsive-img sidenav-item-img" src="{% static "images/user.png"%}">
+                            <h5 class="sidenav-item">Sign out</h5>
+                        </div>
+                    </div>
+                </div>
+                <!-- Sidenav footer -->
+                <div class="col s12 orange valign-wrapper" id="sidenav-footer">
+                    <div class="valign-wrapper" style="margin:auto; width:40%;" id="sidenav-attr-wrapper">
+                        <img class="responsive-img" src="{% static "images/note.png"%}" id="sidenav-attr-img" style="margin-right:2%;">
+                        <h5 id="sidenav-attr" style="color:white;">Attribution</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toggle bar -->
+        <div class="z-depth-1 orange valign-wrapper row" id="toggle-bar">
+            <!-- Left toggle button -->
+            <a class="toggle-inactive valign-wrapper" href="screener-saved.html">
+                <h5 class="toggle-text" style="margin: 0 auto; color:#fff;">Saved</h5>
+            </a>
+            <!-- Right toggle button -->
+            <a class="toggle-active valign-wrapper" href="screener-create.html">
+               <h5 class="toggle-text" style="margin: 0 auto; color:#4B4B4B;">Create</h5>
+            </a>
+        </div>
+
+        <div id="card-section">
+            <!-- Presets Card -->
+            <div id="card-container">
+                <div class="z-depth-1 card" style="overflow: hidden;">
+                    <!-- Card header -->
+                    <div class="orange lighten-1 card-header row" style="padding-left:2%; padding-right:2%; text-align:initial;">
+                        <div class="col s10 valign-wrapper" style="height:100%;">
+                            <h4 id="card-title">Presets</h4>
+                        </div>
+                        <div class="col s2 valign-wrapper" style="height:100%;">
+                            <img class="responsive-img card-help" id="card1-help" src="{% static "images/Help.png"%}"style="margin-left:82%; cursor: pointer;">
+                        </div>
+                    </div>
+                    <!-- Card content - preset carousel -->
+                    <div class="row" style="height:210px;">
+                        <!-- Left arrow -->
+                        <div class="col s2 carousel-arrow-container">
+                            <img class="responsive-img carousel-arrow" "{% static "images/arrow-left.png"%}" id="arrow-left">
+                        </div>
+                        <!-- Carousel items -->
+                        <div class="carousel col s8">
+                            <div class="carousel-item z-depth-1 rounded-card" id="slide-one">
+                                <div class="row" style="height:60%; text-align:center; padding-top:20%;">
+                                    <img class="responsive-img carousel-card-img" src="{% static "images/star-grey.png"%}">
+                                </div>
+                                <div class="row" style="height:30%; padding-top:1%;">
+                                    <h6 class="carousel-card-text">Most Popular</h6>
+                                </div>
+                            </div>
+                            <div class="carousel-item z-depth-1 rounded-card carousel-card-active" id="slide-two">
+                                <div class="row" style="height:60%; text-align:center; padding-top:20%;">
+                                    <img class="responsive-img carousel-card-img" src="{% static "images/lines-blue.png"%}">
+                                </div>
+                                <div class="row" style="height:30%; padding-top:1%;">
+                                    <h6 class="carousel-card-text">Low Volitility</h6>
+                                </div>
+                            </div>
+                            <div class="carousel-item z-depth-1 rounded-card" id="slide-three">
+                                <div class="row" style="height:60%; text-align:center; padding-top:20%;">
+                                    <img class="responsive-img carousel-card-img" src="{% static "images/money.png"%}">
+                                </div>
+                                <div class="row" style="height:30%; padding-top:1%;">
+                                    <h6 class="carousel-card-text">Undervalued</h6>
+                                </div>
+                            </div>
+                            <div class="carousel-item z-depth-1 rounded-card" id="slide-four">
+                                <div class="row" style="height:60%; text-align:center; padding-top:20%;">
+                                    <img class="responsive-img carousel-card-img" src="{% static "images/growth.png"%}">
+                                </div>
+                                <div class="row" style="height:30%; padding-top:1%;">
+                                    <h6 class="carousel-card-text">Undervalued Growth</h6>
+                                </div>
+                            </div>
+                            <div class="carousel-item z-depth-1 rounded-card" id="slide-five">
+                                <div class="row" style="height:60%; text-align:center; padding-top:20%;">
+                                    <img class="responsive-img carousel-card-img" src="{% static "images/bullish.png"%}">
+                                </div>
+                                <div class="row" style="height:30%; padding-top:1%;">
+                                    <h6 class="carousel-card-text">High Growth</h6>
+                                </div>
+                            </div>
+                            <div class="carousel-item z-depth-1 rounded-card" id="slide-six">
+                                <div class="row" style="height:60%; text-align:center; padding-top:20%;">
+                                    <img class="responsive-img carousel-card-img" src="{% static "images/smartphone.png"%}">
+                                </div>
+                                <div class="row" style="height:30%; padding-top:1%;">
+                                    <h6 class="carousel-card-text">Technology</h6>
+                                </div>
+                            </div>
+                            <div class="carousel-item z-depth-1 rounded-card" id="slide-seven">
+                                <div class="row" style="height:60%; text-align:center; padding-top:20%;">
+                                    <img class="responsive-img carousel-card-img" src="{% static "images/bank-grey.png"%}">
+                                </div>
+                                <div class="row" style="height:30%; padding-top:1%;">
+                                    <h6 class="carousel-card-text">Wall Street</h6>
+                                </div>
+                            </div>
+                            <div class="carousel-item z-depth-1 rounded-card" id="slide-eight">
+                                <div class="row" style="height:60%; text-align:center; padding-top:20%;">
+                                    <img class="responsive-img carousel-card-img" src="{% static "images/pill.png"%}">
+                                </div>
+                                <div class="row" style="height:30%; padding-top:1%;">
+                                    <h6 class="carousel-card-text">Medicine</h6>
+                                </div>
+                            </div>
+                            <div class="carousel-item z-depth-1 rounded-card" id="slide-nine">
+                                <div class="row" style="height:60%; text-align:center; padding-top:20%;">
+                                    <img class="responsive-img carousel-card-img" src="{% static "images/bolt.png"%}">
+                                </div>
+                                <div class="row" style="height:30%; padding-top:1%;">
+                                    <h6 class="carousel-card-text">Energy</h6>
+                                </div>
+                            </div>
+                            <div class="carousel-item z-depth-1 rounded-card" id="slide-ten">
+                                <div class="row" style="height:60%; text-align:center; padding-top:20%;">
+                                    <img class="responsive-img carousel-card-img" src="{% static "images/factory.png"%}">
+                                </div>
+                                <div class="row" style="height:30%; padding-top:1%;">
+                                    <h6 class="carousel-card-text">Industry</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Right arrow -->
+                        <div class="col s2 carousel-arrow-container">
+                            <img class="responsive-img carousel-arrow" src="{% static "images/arrow-right.png"%}" id="arrow-right">
+                        </div>
+                    </div>
+
+                    <!-- Expanded card content -->
+                    <div class="row" style="height:auto;" id="preset-expanded">
+                      <div class="row" style="margin-top: 40px;">
+                          <img class="responsive-img" src="{% static "images/arrow-top-light.png"%}" id="collapse-arrow" style = "width:3%; margin-left: 7%; cursor:pointer">
+                      </div>
+                        <!-- Preset desc header -->
+                        <div class="row" style="margin-top:40px;">
+                            <div class="preset-header-container">
+                                <h5 class="preset-header">Preset Description</h5>
+                            </div>
+                            <div class="preset-help-container">
+                                <img class="responsive-img extended-help" src="{% static "images/help-orange.png"%}">
+                            </div>
+                        </div>
+
+
+
+
+                        <!-- Preset description -->
+                        <div class="row" style="text-align: center;">
+                            <p class="preset-description" id="preset-desc-p">
+                            </p>
+                        </div>
+
+                        <!-- Preset results header -->
+                        <div class="row" style="margin-top:40px;">
+                            <div class="extended-header-short-container">
+                                <h5 class="preset-header">Screener Results</h5>
+                            </div>
+                            <div class="preset-header-loader-container preloader-wrapper small active" id="preset-spinner">
+                                <div class="spinner-layer spinner-red-only">
+                                    <div class="circle-clipper left">
+                                        <div class="circle"></div>
+                                    </div>
+                                    <div class="gap-patch">
+                                        <div class="circle"></div>
+                                    </div>
+                                    <div class="circle-clipper right">
+                                        <div class="circle"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="preset-help-container">
+                                <img class="responsive-img extended-help" src="{% static "images/help-orange.png"%}">
+                            </div>
+                        </div>
+                        <!-- Results table -->
+                        <div class="row" style="padding-left:7%;">
+                            <!-- Table modes -->
+                            <div class="row" style="width: 65%; float:left;">
+                                <!-- Make sure first tab has both classes so that it is first active and functions properly -->
+                                <div class="tab-left tab-left-active" id="table-tab-1">
+                                    <p class="tab-text">Stock</p>
+                                </div>
+                                <div class="tab-mid" id="table-tab-2">
+                                    <p class="tab-text">Price</p>
+                                </div>
+                                <div class="tab-mid" id="table-tab-3">
+                                    <p class="tab-text">Change(%)</p>
+                                </div>
+                                <div class="tab-mid" id="table-tab-4">
+                                    <p class="tab-text">Change($)</p>
+                                </div>
+                                <div class="tab-right" id="table-tab-5">
+                                    <p class="tab-text">Market Cap</p>
+                                </div>
+                            </div>
+                            <!-- Table -->
+                            <table id = "preset_results"class="striped">
+                                <!-- Columns -->
+                                <thead>
+                                  <tr>
+                                    <th id="cat-stock">Stock</th>
+                                    <th id="cat-price">Price</th>
+                                    <th id="cat-change$">Change($)</th>
+                                    <th id="cat-change%">Change(%)</th>
+                                    <th id="cat-cap">Market Cap</th>
+                                  </tr>
+                                </thead>
+                                <!-- Rows -->
+                                <tbody id="preset-tbody">
+                                  <!--  <tr>
+                                        <td class="truncate">Apple Inc.</td>
+                                        <td>$197.08</td>
+                                        <td class="up-color">$2.49</td>
+                                        <td class="up-color">0.19%</td>
+                                        <td>$749.96B</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="truncate">Google Inc.</td>
+                                        <td>$897.24</td>
+                                        <td class="down-color">$8.38</td>
+                                        <td class="down-color">0.87%</td>
+                                        <td>$623.39B</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="truncate">Google Inc.</td>
+                                        <td>$897.24</td>
+                                        <td class="down-color">$8.38</td>
+                                        <td class="down-color">0.87%</td>
+                                        <td>$623.39B</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="truncate">Google Inc.</td>
+                                        <td>$897.24</td>
+                                        <td class="down-color">$8.38</td>
+                                        <td class="down-color">0.87%</td>
+                                        <td>$623.39B</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="truncate">Microsoft Corporation</td>
+                                        <td>$897.24</td>
+                                        <td class="down-color">$8.38</td>
+                                        <td class="down-color">0.87%</td>
+                                        <td>$623.39B</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="truncate">Google Inc.</td>
+                                        <td>$897.24</td>
+                                        <td class="down-color">$8.38</td>
+                                        <td class="down-color">0.87%</td>
+                                        <td>$623.39B</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="truncate">Google Inc.</td>
+                                        <td>$897.24</td>
+                                        <td class="down-color">$8.38</td>
+                                        <td class="down-color">0.87%</td>
+                                        <td>$623.39B</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="truncate">Apple Inc.</td>
+                                        <td>$197.08</td>
+                                        <td class="up-color">$2.49</td>
+                                        <td class="up-color">0.19%</td>
+                                        <td>$749.96B</td>
+                                    </tr> -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Positive button -->
+                        <a class="waves-effect waves-light btn-large orange lighten-1 positive-button" id="btn-use-preset">Use Preset</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom card -->
+            <div id="card-container">
+                <div class="z-depth-1 card">
+                    <!-- Card header -->
+                    <div class="orange lighten-1 card-header row" style="padding-left:2%; padding-right:2%; text-align:initial;">
+                        <div class="col s10 valign-wrapper" style="height:100%;">
+                            <h4 id="card-title">Custom</h4>
+                        </div>
+                        <div class="col s2 valign-wrapper" style="height:100%;">
+                            <img class="responsive-img card-help" id="card2-help" src="{% static "images/Help.png"%}" style="margin-left:82%; cursor: pointer;">
+                        </div>
+                    </div>
+                    <!-- Card content - custom params -->
+                    <div class="row" style="height:1000px; padding-left:5%; padding-right:5%; padding-top:2%;">
+                        <!-- Sectors -->
+                        <div class="rounded-card z-depth-1" style="height:280px; margin-bottom:30px;">
+                            <div class="card-side-header orange lighten-1 valign-wrapper">
+                                <div class="card-side-content">
+                                    <img class="responsive-img card-side-img" src="{% static "images/briefcase.png"%}">
+                                    <h5 class="card-side-title">Sectors</h5>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <form>
+                                    <p class="sector-item">
+                                        <input type="checkbox" class="filled-in checkbox-orange" id="box1"/>
+                                        <label for="box1" class="sector-label truncate">Financials</label>
+                                        <img class="responsive-img sector-item-img" src="{% static "images/bullish.png"%}">
+                                    </p>
+                                    <p class="sector-item">
+                                        <input type="checkbox" class="filled-in checkbox-orange" id="box2"/>
+                                        <label for="box2" class="sector-label truncate">Utilities</label>
+                                        <img class="responsive-img sector-item-img" src="{% static "images/water.png"%}">
+                                    </p>
+                                    <p class="sector-item">
+                                        <input type="checkbox" class="filled-in checkbox-orange" id="box3"/>
+                                        <label for="box3" class="sector-label truncate">Consumer Discretionary</label>
+                                        <img class="responsive-img sector-item-img" src="{% static "images/cart.png"%}">
+                                    </p>
+                                    <p class="sector-item">
+                                        <input type="checkbox" class="filled-in checkbox-orange" id="box4"/>
+                                        <label for="box4" class="sector-label truncate">Consumer Staples</label>
+                                        <img class="responsive-img sector-item-img" src="{% static "images/food.png"%}">
+                                    </p>
+                                    <p class="sector-item">
+                                        <input type="checkbox" class="filled-in checkbox-orange" id="box5"/>
+                                        <label for="box5" class="sector-label truncate">Energy</label>
+                                        <img class="responsive-img sector-item-img" src = "{% static "images/bolt.png"%}">
+                                    </p>
+                                    <p class="sector-item">
+                                        <input type="checkbox" class="filled-in checkbox-orange" id="box6"/>
+                                        <label for="box6" class="sector-label truncate">Health</label>
+                                        <img class="responsive-img sector-item-img" src = "{% static "images/pill.png"%}">
+                                    </p>
+                                    <p class="sector-item">
+                                        <input type="checkbox" class="filled-in checkbox-orange" id="box7"/>
+                                        <label for="box7" class="sector-label truncate">Industrials</label>
+                                        <img class="responsive-img sector-item-img" src = "{% static "images/factory.png"%}">
+                                    </p>
+                                    <p class="sector-item">
+                                        <input type="checkbox" class="filled-in checkbox-orange" id="box8"/>
+                                        <label for="box8" class="sector-label truncate">Technology</label>
+                                        <img class="responsive-img sector-item-img" src =  "{% static "images/smartphone.png"%}">
+                                    </p>
+                                    <p class="sector-item">
+                                        <input type="checkbox" class="filled-in checkbox-orange" id="box9"/>
+                                        <label for="box9" class="sector-label truncate">Telecom</label>
+                                        <img class="responsive-img sector-item-img" src = "{% static "images/satellite.png"%}">
+                                    </p>
+                                    <p class="sector-item">
+                                        <input type="checkbox" class="filled-in checkbox-orange" id="box10"/>
+                                        <label for="box10" class="sector-label truncate">Materials</label>
+                                        <img class="responsive-img sector-item-img" src ="{% static "images/tree.png"%}">
+                                    </p>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- Ratios -->
+                        <div class="rounded-card z-depth-1" style="height:240px; margin-bottom:30px;">
+                            <div class="card-side-header orange lighten-1 valign-wrapper">
+                                <div class="card-side-content">
+                                    <img class="responsive-img card-side-img" src="{% static "images/pie-chart.png"%}">
+                                    <h5 class="card-side-title">Ratios</h5>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <form>
+                                    <!-- 1st column -->
+                                    <div class="col s4">
+                                        <div class="row">
+                                            <div class="input-field">
+                                                <input id="P/E" type="number">
+                                                <label for="P/E">P/E</label>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="input-field">
+                                                <input id="EPS" type="number">
+                                                <label for="EPS">EPS</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- 2nd column -->
+                                    <div class="col s4">
+                                        <div class="row">
+                                            <div class="input-field">
+                                                <input id="P/Book" type="number">
+                                                <label for="P/Book">P/Book</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- 3rd column -->
+                                    <div class="col s4">
+                                        <div class="row">
+                                            <div class="input-field">
+                                                <input id="P/S" type="number">
+                                                <label for="P/S">P/S</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- Price Range -->
+                        <div class="rounded-card z-depth-1" style="height:150px; margin-bottom:30px;">
+                            <div class="card-side-header orange lighten-1 valign-wrapper">
+                                <div class="card-side-content">
+                                    <img class="responsive-img card-side-img" src="{% static "images/price-tag.png"%}">
+                                    <h5 class="card-side-title">Price Range</h5>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <form>
+                                    <div class="row col s12">
+                                        <div class="input-field col s4 push-s1">
+                                            <input id="low" type="number">
+                                            <label for="low">Low</label>
+                                        </div>
+                                        <div class="col s2 push-s1 valign-wrapper" style="height:90px;">
+                                            <h6 style="margin:0 auto; color:#757575;">to</h6>
+                                        </div>
+                                        <div class="input-field col s4 push-s1">
+                                            <input id="high" type="number">
+                                            <label for="high">High</label>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- Market Cap -->
+                        <div class="rounded-card z-depth-1" style="height:140px;">
+                            <div class="card-side-header orange lighten-1 valign-wrapper">
+                                <div class="card-side-content">
+                                    <img class="responsive-img card-side-img" src="{% static "images/lines.png"%}">
+                                    <h5 class="card-side-title">Market Cap</h5>
+                                </div>
+                            </div>
+                            <div class="card-body valign-wrapper">
+                                <p class="col s3" style="text-align:center;">
+                                    <input class="filled-in checkbox-orange"  name="market-cap" type="checkbox" id="small"/>
+                                    <label for="small">Small</label>
+                                </p>
+                                <p class="col s3" style="text-align:center;">
+                                    <input class="filled-in checkbox-orange"  name="market-cap" type="checkbox" id="medium"/>
+                                    <label for="medium">Medium</label>
+                                </p>
+                                <p class="col s3" style="text-align:center;">
+                                    <input class="filled-in checkbox-orange"  name="market-cap" type="checkbox" id="large"/>
+                                    <label for="large">Large</label>
+                                </p>
+                                <p class="col s3" style="text-align:center;">
+                                    <input class="filled-in checkbox-orange"  name="market-cap" type="checkbox" id="mega"/>
+                                    <label for="mega">Mega</label>
+                                </p>
+                            </div>
+                        </div>
+                        <!-- Create screener -->
+                        <form id="screener-name-container" >
+                            <div class="input-field col s10">
+                                <input id="screener-name" type="text">
+                                <label for="screener-name">Screener name</label>
+                            </div>
+                        </form>
+                        <a class="waves-effect waves-light btn-large orange lighten-1" id="create-button">Create</a>
+                    </div>
+
+                    <!-- Custom card extended content -->
+                    <div class="row" id="custom-expanded">
+                        <!-- Preset results header -->
+                        <div class="row" style="height: auto; margin-top:40px;">
+                            <div class="extended-header-short-container">
+                                <h5 class="preset-header">Screener Results</h5>
+                            </div>
+                            <div class="preset-header-loader-container preloader-wrapper small active" id="custom-spinner">
+                                <div class="spinner-layer spinner-red-only">
+                                    <div class="circle-clipper left">
+                                        <div class="circle"></div>
+                                    </div>
+                                    <div class="gap-patch">
+                                        <div class="circle"></div>
+                                    </div>
+                                    <div class="circle-clipper right">
+                                        <div class="circle"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="preset-help-container">
+                                <img class="responsive-img extended-help" src="{% static "images/help-orange.png"%}">
+                            </div>
+                        </div>
+                        <!-- Results table row -->
+
+
+                        <div class="row" style="padding-left:7%;">
+                          <div class="row" style="margin-bottom: 10px;">
+                                  <h6 style="font-size: 18px; color: #505050 ;" id="name-label"></h6>
+                              </div>
+                            <!-- Table modes -->
+                            <div class="row" style="width: 65%; float:left;">
+                                <!-- Make sure first tab has both classes so that it is first active and functions properly -->
+                                <div class="tab-left tab-left-active" id="custom-table-tab-1">
+                                    <p class="tab-text">Stock</p>
+                                </div>
+                                <div class="tab-mid" id="custom-table-tab-2">
+                                    <p class="tab-text">Price</p>
+                                </div>
+                                <div class="tab-mid" id="custom-table-tab-3">
+                                    <p class="tab-text">Change(%)</p>
+                                </div>
+                                <div class="tab-mid" id="custom-table-tab-4">
+                                    <p class="tab-text">Change($)</p>
+                                </div>
+                                <div class="tab-right" id="custom-table-tab-5">
+                                    <p class="tab-text">Market Cap</p>
+                                </div>
+                            </div>
+                            <!-- Table -->
+                            <table class="striped">
+                                <!-- Columns -->
+                                <thead>
+                                  <tr>
+                                    <th id="cat-stock">Stock</th>
+                                    <th id="cat-price">Price</th>
+                                    <th id="cat-change$">Change($)</th>
+                                    <th id="cat-change%">Change(%)</th>
+                                    <th id="cat-cap">Market Cap</th>
+                                  </tr>
+                                </thead>
+                                <!-- Rows -->
+                                <tbody id="custom-tbody">
+                                    <tr>
+                                        <td class="truncate">Apple Inc.</td>
+                                        <td>$197.08</td>
+                                        <td class="up-color">$2.49</td>
+                                        <td class="up-color">0.19%</td>
+                                        <td>$749.96B</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="truncate">Google Inc.</td>
+                                        <td>$897.24</td>
+                                        <td class="down-color">$8.38</td>
+                                        <td class="down-color">0.87%</td>
+                                        <td>$623.39B</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="truncate">Google Inc.</td>
+                                        <td>$897.24</td>
+                                        <td class="down-color">$8.38</td>
+                                        <td class="down-color">0.87%</td>
+                                        <td>$623.39B</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="truncate">Google Inc.</td>
+                                        <td>$897.24</td>
+                                        <td class="down-color">$8.38</td>
+                                        <td class="down-color">0.87%</td>
+                                        <td>$623.39B</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="truncate">Microsoft Corporation</td>
+                                        <td>$897.24</td>
+                                        <td class="down-color">$8.38</td>
+                                        <td class="down-color">0.87%</td>
+                                        <td>$623.39B</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="truncate">Google Inc.</td>
+                                        <td>$897.24</td>
+                                        <td class="down-color">$8.38</td>
+                                        <td class="down-color">0.87%</td>
+                                        <td>$623.39B</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="truncate">Google Inc.</td>
+                                        <td>$897.24</td>
+                                        <td class="down-color">$8.38</td>
+                                        <td class="down-color">0.87%</td>
+                                        <td>$623.39B</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="truncate">Apple Inc.</td>
+                                        <td>$197.08</td>
+                                        <td class="up-color">$2.49</td>
+                                        <td class="up-color">0.19%</td>
+                                        <td>$749.96B</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
